@@ -92,6 +92,7 @@
     font-size: clamp(1.7rem, 4.6vw, 3rem);
     line-height: 1.1;
   }
+  .saludo { display: block; font-weight: 800; font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.3; margin-bottom: .5rem; }
   .tachado { position: relative; display: inline-block; padding: 0 .08em; }
   .tachado::after {
     content: "";
@@ -217,6 +218,45 @@
   #doll-birra { display: block; position: relative; }
   #doll-birra svg { transform-origin: 46% 96%; }
   .mareado #doll-birra svg { animation: mareo 2.2s ease-in-out infinite alternate; }
+  /* A las 100 se cae de lado y se queda con las piernas arriba */
+  .volcado #doll-birra svg { transform-origin: 50% 60%; animation: vuelca 1.8s linear forwards, pataleo 1.2s 1.8s ease-in-out infinite alternate; }
+  .volcado .peana { opacity: 0; transition: opacity .3s .4s; }
+  .volcado .ojo-a { opacity: 0; }
+  .volcado .ojo-c { opacity: 1; }
+  @keyframes vuelca {
+    /* Se tambalea, aguanta un instante, se desploma, rebota y se queda */
+    0% { transform: none; animation-timing-function: ease-in-out; }
+    12% { transform: rotate(-9deg); animation-timing-function: ease-in-out; }
+    24% { transform: translateX(2%) rotate(8deg); animation-timing-function: ease-in-out; }
+    34% { transform: translateX(-1%) rotate(-5deg); animation-timing-function: ease-out; }
+    44% { transform: translateX(1%) rotate(14deg); animation-timing-function: cubic-bezier(.6,0,1,.6); }
+    60% { transform: translate(4%, 5%) rotate(124deg); animation-timing-function: ease-out; }
+    68% { transform: translate(4%, -1%) rotate(108deg); animation-timing-function: ease-in; }
+    76% { transform: translate(4%, 5%) rotate(123deg); animation-timing-function: ease-out; }
+    82% { transform: translate(4%, 3%) rotate(116deg); animation-timing-function: ease-in; }
+    88% { transform: translate(4%, 5%) rotate(121deg); }
+    100% { transform: translate(4%, 5%) rotate(120deg); }
+  }
+  /* El golpe: tiembla el posavasos, saltan las chapas y sale un Zzz */
+  .volcado .posavasos { animation: golpe .35s 1.08s ease-out; }
+  @keyframes golpe { 0% { transform: none; } 30% { transform: translateY(5px) scaleY(.96); } 60% { transform: translateY(-2px); } 100% { transform: none; } }
+  .volcado .chapa { animation: brinca .5s 1.08s ease-out; }
+  @keyframes brinca { 0%, 100% { transform: none; } 40% { transform: translateY(-26px) rotate(160deg); } }
+  .zzz {
+    position: absolute; right: 2%; top: 38%;
+    font-family: var(--display); font-size: 1.7rem; line-height: 1; color: var(--blanco);
+    -webkit-text-stroke: 1.5px var(--ink);
+    opacity: 0; pointer-events: none;
+  }
+  .volcado .zzz { animation: zzz 2.4s 1.9s ease-in-out infinite; }
+  @keyframes zzz {
+    0% { opacity: 0; transform: translate(0, 10px) scale(.6) rotate(-10deg); }
+    25%, 70% { opacity: 1; }
+    100% { opacity: 0; transform: translate(14px, -46px) scale(1.1) rotate(8deg); }
+  }
+  @keyframes pataleo { from { transform: translate(4%, 5%) rotate(120deg); } to { transform: translate(4%, 5%) rotate(126deg); } }
+  /* Ojos cada vez más achinados */
+  #doll-birra .ojo-a { transform-box: fill-box; transform-origin: center; transform: scaleY(var(--ojos, 1)); transition: transform .4s; }
   @keyframes mareo { from { transform: rotate(calc(var(--mareo, 0deg) * -1)); } to { transform: rotate(var(--mareo, 0deg)); } }
 
   .brazo { transform-origin: 214px 278px; }
@@ -225,6 +265,65 @@
   .chapa-b { transform-origin: 284px 170px; }
   .nivel { transform-origin: 284px 176px; }
   .ojo-c { opacity: 0; }
+  .color { opacity: var(--color, 0); transition: opacity .4s; }
+  /* BBQ y Halloween: tira la salchicha o la calabaza, coge una Estrella y se la bebe */
+  #doll-bbq, #doll-villano { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  #doll-bbq svg, #doll-villano svg { overflow: visible; }
+  /* El brazo coge impulso, lanza, y aparece el brazo con la botella que sube a la boca */
+  .mano-r, .brazo2 { transform-origin: 214px 278px; }
+  .brazo2 { opacity: 0; }
+  .botella2 { transform-origin: 284px 250px; }
+  .nivel2 { transform-origin: 284px 176px; }
+  .chapa2 { transform-origin: 284px 170px; }
+  .tira .mano-r { animation: v-mano 3.4s cubic-bezier(.5,0,.3,1); }
+  .tira .piel-r { animation: v-piel 3.4s step-end; }
+  .tira .tirada { animation: v-tirada 3.4s ease-out; }
+  .tira .brazo2 { animation: v-brazo2 3.4s ease-in-out; }
+  .tira .botella2 { animation: v-botella2 3.4s ease-in-out; }
+  .tira .chapa2 { animation: v-chapa2 3.4s linear; }
+  .tira .nivel2 { animation: v-nivel2 3.4s linear; }
+  .tira .cabeza { animation: v-cabeza 3.4s ease-in-out; }
+  @keyframes v-mano {
+    0% { transform: none; }
+    11% { transform: rotate(16deg); }
+    18% { transform: rotate(-78deg); }
+    26% { transform: rotate(-62deg); }
+    28%, 100% { transform: none; }
+  }
+  @keyframes v-piel { 0% { opacity: 1; } 28% { opacity: 0; } 93% { opacity: 1; } }
+  @keyframes v-tirada {
+    0%, 17% { transform: none; opacity: 1; }
+    22% { transform: translate(90px, 4px) rotate(220deg); opacity: 1; }
+    27% { transform: translate(180px, 30px) rotate(420deg); opacity: 0; }
+    88% { transform: translate(0, -30px) scale(.4); opacity: 0; }
+    96%, 100% { transform: none; opacity: 1; }
+  }
+  @keyframes v-brazo2 {
+    0%, 27% { opacity: 0; transform: rotate(30deg); }
+    32% { opacity: 1; transform: rotate(-8deg); }
+    36% { opacity: 1; transform: none; }
+    42% { opacity: 1; transform: rotate(-18deg); }
+    52%, 82% { opacity: 1; transform: rotate(-22deg); }
+    90% { opacity: 1; transform: none; }
+    94%, 100% { opacity: 0; transform: none; }
+  }
+  @keyframes v-botella2 {
+    0%, 42% { transform: none; }
+    52% { transform: rotate(-66deg); }
+    82% { transform: rotate(-76deg); }
+    90%, 100% { transform: none; }
+  }
+  @keyframes v-chapa2 {
+    0%, 34% { transform: none; opacity: 1; }
+    37% { transform: translate(4px, -14px) rotate(40deg); opacity: 1; }
+    46% { transform: translate(40px, -78px) rotate(300deg); opacity: 0; }
+    100% { transform: translate(40px, -78px); opacity: 0; }
+  }
+  @keyframes v-nivel2 { 0%, 52% { transform: scaleY(1); } 82%, 100% { transform: scaleY(.05); } }
+  @keyframes v-cabeza {
+    0%, 8% { transform: none; } 18% { transform: rotate(-5deg); } 30%, 44% { transform: none; }
+    52% { transform: rotate(4deg); } 82% { transform: rotate(9deg); } 92% { transform: rotate(-3deg); } 100% { transform: none; }
+  }
   .rubor { opacity: var(--rubor, 0); transition: opacity .4s; }
 
   /* Un trago: salta la chapa, brinda con "salut!", bebe y vuelve llena */
@@ -389,6 +488,7 @@
     font-weight: 800; color: transparent;
   }
   .opcion strong { display: block; font-size: 1.15rem; line-height: 1.2; }
+  .opcion .fecha { display: block; font-size: .92em; }
   .opcion small { display: block; font-size: .95rem; font-weight: 600; opacity: .85; }
   .opcion input:checked + .cara { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
   .opcion input:checked + .cara .marca { color: var(--ink); }
@@ -423,9 +523,11 @@
   @media (prefers-reduced-motion: reduce) {
     #pista { transition-duration: .01s; }
     .anima .tachado::after, .anima .cuarenta, .anima .cuarenta span::after, .anima .suma .a, .anima .suma .b, .anima .suma .mas, .anima .confeti i { animation: none; }
-    .bebe .brazo, .bebe .botella, .bebe .cabeza, .bebe .chapa-b, .bebe .nivel, .bebe .ojo-a, .bebe .ojo-c, .bebe .brindis, .cifra.sube, .chapa, .mareado #doll-birra svg { animation: none; }
+    .bebe .brazo, .bebe .botella, .bebe .cabeza, .bebe .chapa-b, .bebe .nivel, .bebe .ojo-a, .bebe .ojo-c, .bebe .brindis, .cifra.sube, .chapa, .mareado #doll-birra svg, .volcado #doll-birra svg, .tira .mano-r, .tira .piel-r, .tira .tirada, .tira .brazo2, .tira .botella2, .tira .chapa2, .tira .nivel2, .tira .cabeza { animation: none; }
     .mas-uno { animation-duration: .01s; }
-    .rubor { transition: none; }
+    .volcado #doll-birra svg { transform: translate(4%, 5%) rotate(120deg); }
+    .volcado .posavasos, .volcado .chapa, .volcado .zzz { animation: none; }
+    .rubor, .color { transition: none; }
     .boton, .opcion .cara { transition: none; }
   }
 
@@ -517,7 +619,8 @@
     .pie-foto { min-height: 2.7em; margin-top: .3rem; font-size: .9rem; }
     .opcion .cara { padding: .7rem .9rem; }
     .opcion strong { font-size: 1.05rem; }
-    .opcion small { font-size: .88rem; }
+    .opcion .fecha { display: block; font-size: .92em; }
+  .opcion small { font-size: .88rem; }
     .opciones { gap: .7rem; }
     textarea { min-height: 3.2rem; }
     input[type=text], textarea { padding: .6rem .9rem; }
@@ -529,7 +632,8 @@
   }
   @media (max-width: 760px) and (max-height: 700px) {
     .entradilla { display: none; }
-    .opcion small { display: none; }
+    .opcion .fecha { display: block; font-size: .92em; }
+  .opcion small { display: none; }
     .votar .sub { display: none; }
     .llamada { margin-bottom: .9rem; }
     .plan .nota { margin-top: .6rem; font-size: .92rem; }
@@ -548,19 +652,21 @@
   <div class="wrap">
     <div>
       <h1>
-        <span class="mentira">Christian no cumple <span class="tachado">40</span>.<br>Cumple</span>
+        <span class="saludo">¡Holaa!! Como bien sabes, es mi cumpleaños.</span>
+        <span class="mentira">No cumplo <span class="tachado">40</span>.<br>Cumplo</span>
         <span class="suma" aria-label="20 más 20"><span class="a">20</span><span class="mas">+</span><span class="b">20</span><span class="cuarenta" aria-hidden="true"><span>40</span></span><span class="confeti" id="confeti" aria-hidden="true"></span></span>
       </h1>
       <p class="entradilla">Dos veces 20 son dos cumpleaños, así que hay dos fiestas. Mira los planes y dime a cuál vienes.</p>
       <a class="boton" href="#planes">Ver plan</a>
     </div>
     <div class="barra">
-      <p class="llamada">Clica encima y ábrele una cerveza a Christian</p>
-      <button class="bebedor" type="button" id="bebedor" aria-label="Clica encima y ábrele una cerveza a Christian">
+      <p class="llamada">Clica encima y ábreme una cerveza</p>
+      <button class="bebedor" type="button" id="bebedor" aria-label="Clica encima y ábreme una cerveza">
         <span class="posavasos" aria-hidden="true"></span>
         <span id="doll-birra"></span>
         <span class="chapas" id="chapas" aria-hidden="true"></span>
         <span class="brindis" aria-hidden="true">salut!</span>
+        <span class="zzz" aria-hidden="true">Zzz</span>
       </button>
       <p class="marcador"><span class="cifra" id="cifra">0</span> <span id="cifra-texto">Estrellas Galicia</span></p>
       <p class="pie-foto" id="comentario" role="status" aria-live="polite"></p>
@@ -620,11 +726,11 @@
           <div class="opciones">
             <label class="opcion dia">
               <input type="checkbox" id="v1" name="primeros20">
-              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los primeros 20 (10 de octubre)</strong><small>Cervezas, BBQ, Barça y salir</small></span></span>
+              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los primeros 20 <span class="fecha">(10 de octubre)</span></strong><small>Cervezas, BBQ, Barça y salir</small></span></span>
             </label>
             <label class="opcion noche">
               <input type="checkbox" id="v2" name="segundos20">
-              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los segundos 20 (31 de octubre)</strong><small>Halloween: cervezas, villanos, tardeo y fiesta</small></span></span>
+              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los segundos 20 <span class="fecha">(31 de octubre)</span></strong><small>Halloween: cervezas, villanos, tardeo y fiesta</small></span></span>
             </label>
             <label class="opcion nada">
               <input type="checkbox" id="v0" name="ninguno">
@@ -662,9 +768,11 @@ function doll(v) {
     `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 9}" stroke-linecap="round" stroke-linejoin="round"/>` +
     `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
   let o = '';
+  const salchicha = d => limb(d, 17, '#B5482E') + `<path d="${d}" fill="none" stroke="#E9855E" stroke-width="4" stroke-linecap="round" transform="translate(-3 0)" opacity=".8"/>`;
+  const B = 'M268 300 L268 240 C268 226 277 220 277 206 L277 182 Q277 177 280 177 L288 177 Q291 177 291 182 L291 206 C291 220 300 226 300 240 L300 300 Q300 306 294 306 L274 306 Q268 306 268 300 Z';
 
   // Peana de figura
-  o += `<ellipse cx="160" cy="424" rx="86" ry="14" fill="${TOP}" ${s}/><ellipse cx="160" cy="420" rx="70" ry="8" fill="#fff" opacity=".12"/>`;
+  o += `<g class="peana"><ellipse cx="160" cy="424" rx="86" ry="14" fill="${TOP}" ${s}/><ellipse cx="160" cy="420" rx="70" ry="8" fill="#fff" opacity=".12"/></g>`;
 
   // Capa de villano (detrás del cuerpo)
   if (v === 'villano') {
@@ -692,6 +800,8 @@ function doll(v) {
   o += `<circle cx="60" cy="182" r="15" fill="${SKIN}" ${s}/><circle cx="260" cy="182" r="15" fill="${SKIN}" ${s}/>`;
   o += `<circle cx="57" cy="193" r="7" fill="${INK}"/><circle cx="263" cy="193" r="7" fill="${INK}"/>`;
   o += `<path d="M70 150 C70 80 110 62 160 62 C210 62 250 80 250 150 L250 190 C250 236 215 254 160 254 C105 254 70 236 70 190 Z" fill="${SKIN}" ${s}/>`;
+  // Se va poniendo rojo con cada cerveza
+  if (v === 'birra') o += `<path class="color" d="M70 150 C70 80 110 62 160 62 C210 62 250 80 250 150 L250 190 C250 236 215 254 160 254 C105 254 70 236 70 190 Z" fill="#E5383B"/>`;
   // Brillo de vinilo
   o += `<path d="M84 196 C84 222 96 236 116 242" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".3"/>`;
   // Degradado de los lados
@@ -739,16 +849,13 @@ function doll(v) {
     if (v === 'bbq') o += limb('M-6 198 Q16 182 36 194', 15, '#C4573A');
   }
 
-  // Brazo derecho y lo que lleva en la mano
-  if (v === 'birra') {
-    // Brazo con la Estrella Galicia: gira desde el hombro al beber
-    const B = 'M268 300 L268 240 C268 226 277 220 277 206 L277 182 Q277 177 280 177 L288 177 Q291 177 291 182 L291 206 C291 220 300 226 300 240 L300 300 Q300 306 294 306 L274 306 Q268 306 268 300 Z';
-    o += `<g class="brazo">` + limb('M214 278 L256 296 L284 252', 28, SKIN);
-    o += `<g class="botella">
-            <defs><clipPath id="vidrio"><path d="${B}"/></clipPath></defs>
+  // Brazo levantado con la Estrella Galicia: gira desde el hombro al beber
+  const brazoBirra = (k, id) => `<g class="brazo${k}">` + limb('M214 278 L256 296 L284 252', 28, SKIN) +
+    `<g class="botella${k}">
+            <defs><clipPath id="${id}"><path d="${B}"/></clipPath></defs>
             <path d="${B}" fill="#6B3410"/>
-            <g clip-path="url(#vidrio)">
-              <rect class="nivel" x="262" y="176" width="44" height="132" fill="#C7701C"/>
+            <g clip-path="url(#${id})">
+              <rect class="nivel${k}" x="262" y="176" width="44" height="132" fill="#C7701C"/>
               <rect x="262" y="186" width="44" height="22" fill="#17151F"/><rect x="262" y="208" width="44" height="5" fill="#E5383B"/>
               <rect x="262" y="262" width="44" height="26" fill="#17151F"/><rect x="262" y="288" width="44" height="9" fill="#E5383B"/>
               <circle cx="284" cy="274" r="8" fill="#E5383B"/>
@@ -756,34 +863,46 @@ function doll(v) {
               <path d="M273 232 L273 256" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".4"/>
             </g>
             <path d="${B}" fill="none" ${s}/>
-            <rect class="chapa-b" x="275" y="166" width="18" height="12" rx="3" fill="#2D2A38" ${s}/>
-          </g>`;
-    o += `<ellipse cx="284" cy="250" rx="17" ry="12" fill="${SKIN}" ${s}/></g>`;
-  } else {
-    o += limb('M214 278 L238 324 L206 310', 28, SKIN);
-  }
+            <rect class="${k ? 'chapa2' : 'chapa-b'}" x="275" y="166" width="18" height="12" rx="3" fill="#2D2A38" ${s}/>
+          </g>` +
+    `<ellipse cx="284" cy="250" rx="17" ry="12" fill="${SKIN}" ${s}/></g>`;
+
+  // Brazo derecho y lo que lleva en la mano
   if (v === 'birra') {
-  } else if (v === 'bbq') {
-    o += `<path d="M216 282 q20 0 20 17 q0 17 -20 17" fill="none" stroke="${INK}" stroke-width="12" stroke-linecap="round"/><path d="M216 282 q20 0 20 17 q0 17 -20 17" fill="none" stroke="#FFFDF6" stroke-width="4" stroke-linecap="round"/>
-          <rect x="170" y="272" width="46" height="58" rx="6" fill="#F6B21B" ${s}/>
-          <path d="M182 290 L182 320 M193 290 L193 320 M204 290 L204 320" stroke="#D98E0A" stroke-width="4" stroke-linecap="round"/>
-          <path d="M166 280 q-5 -14 9 -16 q4 -12 17 -7 q10 -9 19 2 q12 0 9 14 q2 10 -9 9 q-5 7 -12 0 q-9 7 -15 0 q-12 5 -18 -2 Z" fill="#FFFDF6" ${s}/>`;
-    o += `<ellipse cx="202" cy="324" rx="16" ry="12" fill="${SKIN}" ${s}/>`;
+    o += brazoBirra('', 'vidrio');
   } else {
-    o += `<path d="M192 274 L195 266" stroke="#3E7B3A" stroke-width="7" stroke-linecap="round"/>
+    // Al clicar lanza lo que lleva (salchicha o calabaza) y cambia al brazo con la Estrella
+    const tirada = v === 'bbq'
+      ? `<g class="tirada" style="transform-origin:202px 324px">` + salchicha('M194 280 Q214 322 198 368') + `</g>`
+      : `<g class="tirada" style="transform-origin:192px 302px"><path d="M192 274 L195 266" stroke="#3E7B3A" stroke-width="7" stroke-linecap="round"/>
           <circle cx="192" cy="302" r="27" fill="#FF8A1F" ${s}/>
           <path d="M178 296 l7 -10 l7 10 Z M196 296 l7 -10 l7 10 Z" fill="${INK}"/>
-          <path d="M175 308 l7 5 l5 -5 l5 5 l5 -5 l5 5 l7 -5 q-17 19 -34 0 Z" fill="${INK}"/>`;
-    o += `<ellipse cx="208" cy="328" rx="16" ry="12" fill="${SKIN}" ${s}/>`;
+          <path d="M175 308 l7 5 l5 -5 l5 5 l5 -5 l5 5 l7 -5 q-17 19 -34 0 Z" fill="${INK}"/></g>`;
+    const [hx, hy] = v === 'bbq' ? [202, 324] : [208, 328];
+    o += `<g class="mano-r"><g class="piel-r">` + limb('M214 278 L238 324 L206 310', 28, SKIN) + `</g>` + tirada +
+         `<ellipse class="piel-r" cx="${hx}" cy="${hy}" rx="16" ry="12" fill="${SKIN}" ${s}/></g>`;
+    o += brazoBirra('2', 'vidrio-' + v);
   }
 
-  const alt = { birra: 'Figura cabezona de Christian con una Estrella Galicia en la mano', bbq: 'Figura cabezona de Christian con gafas de sol, cerveza, pinzas de barbacoa y bufanda', villano: 'Figura cabezona de Christian disfrazada de villano con capa, cuernos y calabaza' }[v];
+  const alt = { birra: 'Figura cabezona de Christian con una Estrella Galicia en la mano', bbq: 'Figura cabezona de Christian con gafas de sol, bufanda, pinzas con una salchicha y otra salchicha en la mano', villano: 'Figura cabezona de Christian disfrazada de villano con capa, cuernos y calabaza' }[v];
   const box = '-30 -8 380 452';
   return `<svg viewBox="${box}" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${alt}">${o}</svg>`;
 }
 document.getElementById('doll-birra').innerHTML = doll('birra');
 document.getElementById('doll-bbq').innerHTML = doll('bbq');
 document.getElementById('doll-villano').innerHTML = doll('villano');
+
+/* -- BBQ y Halloween: clic y cambia la salchicha o la calabaza por una Estrella -- */
+[['doll-bbq', 'una salchicha'], ['doll-villano', 'la calabaza']].forEach(function ([id, cosa]) {
+  const v = document.getElementById(id);
+  v.setAttribute('role', 'button'); v.tabIndex = 0;
+  v.setAttribute('aria-label', 'Clica: tira ' + cosa + ' y se bebe una Estrella Galicia');
+  v.title = 'Clica encima';
+  const brinda = () => { v.classList.remove('tira'); void v.offsetWidth; v.classList.add('tira'); };
+  v.addEventListener('click', brinda);
+  v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); brinda(); } });
+  v.addEventListener('animationend', e => { if (e.animationName === 'v-brazo2') v.classList.remove('tira'); });
+});
 
 /* -- Slides: una pantalla cada vez, con transición lenta -- */
 (function () {
@@ -904,27 +1023,33 @@ const bebedor = document.getElementById('bebedor');
 const cifra = document.getElementById('cifra');
 const comentario = document.getElementById('comentario');
 const frases = {
-  1: 'Primera Estrella. Empieza el cumple.',
-  5: 'Cinco. Todavía camina recto.',
-  10: 'Diez. Ya está cantando el himno del Barça.',
-  20: '20. Primeros 20 completados.',
-  30: '30. Dice que él controla.',
-  40: '40 enteros. Que alguien le pida un taxi.',
-  60: '60. Esto ya son 20 + 20 + 20.'
+  1: 'Empieza el cumple.',
+  5: 'Todavía camina recto.',
+  10: 'Ya está cantando el himno del Barça.',
+  20: 'Primeros 20 completados.',
+  30: 'Dice que él controla.',
+  40: 'Que alguien le pida un taxi.',
+  60: 'Esto ya son 20 + 20 + 20.',
+  100: '¡No me abras más!'
 };
 let birras = 0;
 const chapas = document.getElementById('chapas');
 const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
 bebedor.addEventListener('click', () => {
+  // A las 100 vuelca, piernas arriba, y ya no admite más
+  if (birras >= 100) { comentario.textContent = '¡No me abras más!'; return; }
   birras++;
   cifra.textContent = birras;
   document.getElementById('cifra-texto').textContent = birras === 1 ? 'Estrella Galicia' : 'Estrellas Galicia';
   if (frases[birras]) comentario.textContent = frases[birras];
-  bebedor.style.setProperty('--rubor', Math.min(birras / 20, 1));
+  bebedor.style.setProperty('--rubor', Math.min(birras / 10, 1));
+  bebedor.style.setProperty('--color', Math.min(birras / 40, 1) * 0.6);
+  bebedor.style.setProperty('--ojos', (1 - Math.min(birras, 100) / 100 * 0.78).toFixed(3));
 
   // Cuanto más bebe, más se tambalea
   bebedor.style.setProperty('--mareo', Math.min(birras, 40) * 0.12 + 'deg');
-  bebedor.classList.toggle('mareado', birras >= 5);
+  bebedor.classList.toggle('mareado', birras >= 5 && birras < 100);
+  if (birras === 100) { bebedor.classList.add('volcado'); bebedor.classList.remove('bebe'); return; }
 
   // Reinicia la animación del trago
   bebedor.classList.remove('bebe'); cifra.classList.remove('sube');
