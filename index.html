@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>20 + 20: el cumple de Christian</title>
+<meta name="description" content="Christian no cumple 40, cumple 20 + 20. Dos fiestas: 10 y 31 de octubre. Vota a cuál vienes.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Onest:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!--
+  --
+  CONECTAR CON GOOGLE SHEETS (5 minutos)
+  1. Crea una hoja de cálculo nueva en Google Sheets.
+  2. Extensiones → Apps Script. Borra lo que haya y pega esto:
+
+  function doPost(e) {
+    var d = JSON.parse(e.postData.contents);
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    if (sh.getLastRow() === 0) {
+      sh.appendRow(['Fecha', 'Nombre', 'Primeros 20 (10 oct)', 'Segundos 20 (31 oct)', 'No puede', 'Mensaje']);
+    }
+    sh.appendRow([
+      new Date(), limpia(d.nombre),
+      d.primeros20 ? 'Sí' : '', d.segundos20 ? 'Sí' : '', d.ninguno ? 'Sí' : '',
+      limpia(d.mensaje)
+    ]);
+    return ContentService.createTextOutput('ok');
+  }
+  // Evita que alguien cuele una fórmula en la hoja
+  function limpia(t) {
+    t = String(t || '').slice(0, 500);
+    return /^[=+\-@]/.test(t) ? "'" + t : t;
+  }
+
+  3. Implementar → Nueva implementación → tipo "Aplicación web".
+     Ejecutar como: "Yo". Quién tiene acceso: "Cualquier usuario".
+  4. Copia la URL que termina en /exec y pégala abajo en SHEET_URL.
+  --
+-->
+<script>
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzlJEtN6n4kpOJbyqrr7Zm01Hw52v0Eu_5Uq8fnDeR21eqDXBeWHcHUApSoYO0qi_Mp/exec'; // ← pega aquí la URL /exec de tu Apps Script
+</script>
+
+<style>
+  :root {
+    --ink: #1B1730;
+    --sol: #FFD23F;
+    --crema: #FFF6DC;
+    --dia: #1F5FD6;
+    --cielo: #A6DBFF;
+    --noche: #2A1647;
+    --lila: #7B3FC4;
+    --calabaza: #FF8A1F;
+    --blanco: #FFFDF6;
+    --display: "Bagel Fat One", "Arial Black", Impact, sans-serif;
+    --texto: "Onest", "Segoe UI", system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--sol);
+    color: var(--ink);
+    font-family: var(--texto);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  img, svg { max-width: 100%; display: block; }
+  h1, h2, h3, p { margin: 0; }
+  .wrap { width: min(1080px, 100% - 2.5rem); margin-inline: auto; }
+
+  /* -- Portada -- */
+  .portada {
+    padding: clamp(2rem, 6vw, 4.5rem) 0 clamp(3rem, 7vw, 5rem);
+    padding-top: calc(clamp(2rem, 6vw, 4.5rem) + env(safe-area-inset-top, 0px));
+    overflow: hidden;
+  }
+  .portada .wrap {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  h1 { font-size: 1rem; line-height: 1; }
+  .mentira {
+    display: block;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.7rem, 4.6vw, 3rem);
+    line-height: 1.1;
+  }
+  .tachado { position: relative; display: inline-block; padding: 0 .08em; }
+  .tachado::after {
+    content: "";
+    position: absolute; left: -6%; right: -6%; top: 46%;
+    height: .2em; border-radius: 99px;
+    background: #E5383B;
+    transform: rotate(-7deg) scaleX(1);
+    transform-origin: left center;
+  }
+  .suma {
+    position: relative;
+    display: inline-block;
+    font-family: var(--display);
+    font-size: clamp(4.4rem, 17.5vw, 12.5rem);
+    line-height: .9;
+    letter-spacing: -.02em;
+    margin-top: .12em;
+    white-space: nowrap;
+  }
+  .suma .a, .suma .b, .suma .mas { display: inline-block; }
+  .suma .a { color: var(--dia); }
+  .suma .b { color: var(--lila); }
+  .suma .mas { font-size: .6em; vertical-align: .14em; margin: 0 .04em; }
+
+  /* El 40 aparece, se tacha, revienta y se parte en 20 + 20 */
+  .cuarenta {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    opacity: 0; pointer-events: none;
+  }
+  .cuarenta span { position: relative; display: inline-block; }
+  .cuarenta span::after {
+    content: ""; position: absolute; left: -8%; right: -8%; top: 44%;
+    height: .13em; border-radius: 99px; background: #E5383B;
+    transform: rotate(-9deg) scaleX(0); transform-origin: left center;
+  }
+  .confeti { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+  .confeti i {
+    position: absolute; left: -7px; top: -5px; width: 14px; height: 10px;
+    border: 2px solid var(--ink); border-radius: 3px;
+    opacity: 0;
+  }
+  .anima .tachado::after { animation: tacha .3s .25s cubic-bezier(.6,0,.3,1) both; }
+  .anima .cuarenta { animation: c40 1.45s .45s cubic-bezier(.3,0,.3,1) both; }
+  .anima .cuarenta span::after { animation: c40-tacha .22s 1.05s cubic-bezier(.7,0,.3,1) both; }
+  .anima .suma .a { animation: sale-a .7s 1.62s cubic-bezier(.2,1.7,.4,1) both; }
+  .anima .suma .b { animation: sale-b .7s 1.62s cubic-bezier(.2,1.7,.4,1) both; }
+  .anima .suma .mas { animation: sale-mas .6s 1.95s cubic-bezier(.2,1.9,.4,1) both; }
+  .anima .confeti i { animation: confeti 1s 1.62s cubic-bezier(.1,.7,.3,1) both; }
+  @keyframes c40 {
+    0% { opacity: 0; transform: scale(.4) rotate(-8deg); }
+    16%, 58% { opacity: 1; transform: none; }
+    63% { transform: translateX(-.04em) rotate(-2deg); }
+    68% { transform: translateX(.04em) rotate(2deg); }
+    73% { transform: translateX(-.03em) rotate(-1deg); }
+    80% { opacity: 1; transform: scale(1.18); }
+    100% { opacity: 0; transform: scale(1.7); }
+  }
+  @keyframes c40-tacha { from { transform: rotate(-9deg) scaleX(0); } to { transform: rotate(-9deg) scaleX(1); } }
+  @keyframes sale-a { from { opacity: 0; transform: translateX(55%) scale(.3) rotate(14deg); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes sale-b { from { opacity: 0; transform: translateX(-55%) scale(.3) rotate(-14deg); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes sale-mas { from { opacity: 0; transform: scale(0) rotate(-200deg); } to { opacity: 1; transform: none; } }
+  @keyframes confeti {
+    0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.4); }
+    8%, 70% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1); }
+  }
+  @keyframes tacha { from { transform: rotate(-7deg) scaleX(0); } }
+
+  .entradilla {
+    margin-top: 1.4rem;
+    font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+    max-width: 30em;
+    font-weight: 600;
+  }
+  .boton {
+    display: inline-block;
+    margin-top: 1.6rem;
+    font: 800 1.1rem var(--texto);
+    color: var(--blanco);
+    background: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: .85rem 1.7rem;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--blanco);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .boton:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--blanco); }
+  .boton:active { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--blanco); }
+  :focus-visible { outline: 4px solid #E5383B; outline-offset: 3px; }
+
+  .barra { justify-self: center; width: min(360px, 82vw); text-align: center; }
+  .bebedor {
+    position: relative; display: block; width: 100%;
+    padding: 0; border: 0; background: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    border-radius: 24px;
+  }
+  .bebedor svg { position: relative; overflow: visible; }
+  .posavasos {
+    position: absolute; left: 7%; right: 7%; bottom: 1%;
+    aspect-ratio: 1; border-radius: 50%;
+    background: var(--blanco);
+    border: 6px solid var(--ink);
+    box-shadow: inset 0 0 0 10px var(--blanco), inset 0 0 0 14px #E5383B, 9px 9px 0 var(--ink);
+  }
+  .llamada {
+    position: relative; display: inline-block;
+    margin-bottom: 1.4rem; padding: .6rem 1rem;
+    font-weight: 800; font-size: 1.05rem; line-height: 1.25;
+    background: var(--blanco); border: 3px solid var(--ink); border-radius: 16px;
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: rotate(-2deg);
+  }
+  .llamada::after {
+    content: ""; position: absolute; left: 50%; bottom: -11px;
+    width: 16px; height: 16px; background: var(--blanco);
+    border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  #doll-birra { display: block; position: relative; }
+  #doll-birra svg { transform-origin: 46% 96%; }
+  .mareado #doll-birra svg { animation: mareo 2.2s ease-in-out infinite alternate; }
+  @keyframes mareo { from { transform: rotate(calc(var(--mareo, 0deg) * -1)); } to { transform: rotate(var(--mareo, 0deg)); } }
+
+  .brazo { transform-origin: 214px 278px; }
+  .botella { transform-origin: 284px 250px; }
+  .cabeza { transform-origin: 160px 252px; }
+  .chapa-b { transform-origin: 284px 170px; }
+  .nivel { transform-origin: 284px 176px; }
+  .ojo-c { opacity: 0; }
+  .rubor { opacity: var(--rubor, 0); transition: opacity .4s; }
+
+  /* Un trago: salta la chapa, brinda con "salut!", bebe y vuelve llena */
+  .bebe .chapa-b { animation: t-chapa 1.6s linear; }
+  .bebe .brazo { animation: t-brazo 1.6s ease-in-out; }
+  .bebe .botella { animation: t-botella 1.6s ease-in-out; }
+  .bebe .cabeza { animation: t-cabeza 1.6s ease-in-out; }
+  .bebe .nivel { animation: t-nivel 1.6s linear; }
+  .bebe .ojo-a { animation: t-ojo-a 1.6s step-end; }
+  .bebe .ojo-c { animation: t-ojo-c 1.6s step-end; }
+  .bebe .brindis { animation: t-brindis 1.6s ease-out; }
+  @keyframes t-chapa {
+    0% { transform: none; opacity: 1; }
+    4% { transform: translate(4px, -14px) rotate(40deg); opacity: 1; }
+    14% { transform: translate(40px, -78px) rotate(300deg); opacity: 0; }
+    99% { transform: translate(40px, -78px); opacity: 0; }
+  }
+  @keyframes t-brazo {
+    0%, 5% { transform: none; } 16%, 36% { transform: rotate(-18deg); }
+    50%, 82% { transform: rotate(-22deg); } 100% { transform: none; }
+  }
+  @keyframes t-botella {
+    0%, 5% { transform: none; } 16%, 36% { transform: rotate(20deg); }
+    50% { transform: rotate(-66deg); } 82% { transform: rotate(-76deg); } 100% { transform: none; }
+  }
+  @keyframes t-cabeza {
+    0%, 40% { transform: none; } 50% { transform: rotate(4deg); }
+    82% { transform: rotate(9deg); } 92% { transform: rotate(-3deg); } 100% { transform: none; }
+  }
+  @keyframes t-nivel { 0%, 50% { transform: scaleY(1); } 82%, 97% { transform: scaleY(.05); } 100% { transform: scaleY(1); } }
+  @keyframes t-ojo-a { 0% { opacity: 1; } 46% { opacity: 0; } 86% { opacity: 1; } }
+  @keyframes t-ojo-c { 0% { opacity: 0; } 46% { opacity: 1; } 86% { opacity: 0; } }
+
+  .brindis {
+    position: absolute; left: -9%; top: 24%; z-index: 3;
+    font-family: var(--display); font-size: 1.9rem; line-height: 1;
+    color: var(--ink); background: var(--blanco);
+    border: 3px solid var(--ink); border-radius: 14px; padding: .3rem .7rem .4rem;
+    box-shadow: 3px 3px 0 var(--ink);
+    opacity: 0; pointer-events: none;
+    transform: rotate(-12deg);
+  }
+  @keyframes t-brindis {
+    0%, 5% { opacity: 0; transform: translateY(10px) rotate(-12deg) scale(.6); }
+    14%, 36% { opacity: 1; transform: translateY(0) rotate(-12deg) scale(1); }
+    46%, 100% { opacity: 0; transform: translateY(-18px) rotate(-12deg) scale(1); }
+  }
+  .chapas { position: absolute; inset: 0; pointer-events: none; }
+  .chapa {
+    position: absolute; width: 17px; height: 17px; border-radius: 50%;
+    background: radial-gradient(circle, #E5383B 0 3px, #2D2A38 3.5px);
+    border: 2.5px solid var(--ink);
+    animation: cae .55s .12s cubic-bezier(.3,0,.6,1.5) backwards;
+  }
+  @keyframes cae { from { transform: translate(var(--dx), -170px) rotate(540deg); opacity: 0; } 30% { opacity: 1; } }
+  .mas-uno {
+    position: absolute; right: 4%; top: 30%;
+    font-family: var(--display); font-size: 2rem; line-height: 1; color: #E5383B;
+    -webkit-text-stroke: 1.5px var(--ink);
+    pointer-events: none; animation: flota .9s ease-out forwards;
+  }
+  @keyframes flota { from { transform: translateY(10px) scale(.6); opacity: 0; } 25% { opacity: 1; transform: translateY(-6px) scale(1.1); } to { transform: translateY(-70px); opacity: 0; } }
+
+  .marcador { margin-top: 1.1rem; font-weight: 800; font-size: 1.15rem; line-height: 1; }
+  .cifra {
+    display: inline-block; min-width: 1.6em;
+    font-family: var(--display); font-weight: 400; font-size: 3.2rem;
+    vertical-align: -.12em;
+  }
+  .cifra.sube { animation: sube .3s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes sube { 0% { transform: scale(1.5) rotate(-8deg); } 100% { transform: none; } }
+  .pie-foto { margin-top: .6rem; font-size: .98rem; font-weight: 600; min-height: 3em; }
+
+  /* -- Los dos planes -- */
+  .planes { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-block: 6px solid var(--ink); }
+  .plan {
+    position: relative;
+    padding: clamp(2.2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem) 0;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .plan-dia { background: var(--cielo); }
+  .plan-noche { background: var(--noche); color: var(--crema); border-left: 6px solid var(--ink); }
+  .astro {
+    position: absolute; top: -70px; right: -70px;
+    width: 230px; height: 230px; border-radius: 50%;
+  }
+  .plan-dia .astro { background: var(--sol); border: 6px solid var(--ink); }
+  .plan-noche .astro { background: var(--calabaza); border: 6px solid var(--ink); box-shadow: inset -34px 14px 0 rgba(0,0,0,.14); }
+  .plan > *:not(.astro) { position: relative; }
+  .plan h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(2.3rem, 5.4vw, 4rem);
+    line-height: .95;
+    max-width: 6.5em;
+  }
+  .cuando {
+    display: inline-block; align-self: flex-start;
+    margin-top: 1.1rem;
+    font-weight: 800; font-size: 1.1rem;
+    background: var(--blanco); color: var(--ink);
+    border: 3px solid var(--ink); border-radius: 10px;
+    padding: .35rem .8rem;
+    transform: rotate(-2deg);
+  }
+  .plan ul {
+    list-style: none; padding: 0; margin: 1.6rem 0 0;
+    display: flex; flex-wrap: wrap; gap: .55rem;
+  }
+  .plan li {
+    font-weight: 800;
+    border: 3px solid var(--ink); border-radius: 999px;
+    padding: .4rem .95rem;
+    background: var(--blanco); color: var(--ink);
+  }
+  .plan-noche li { background: var(--lila); color: var(--blanco); }
+  .plan .nota { margin-top: 1.3rem; font-weight: 600; max-width: 26em; }
+  .plan .falta { margin-top: .5rem; font-size: .95rem; opacity: .8; }
+  .plan .figura { width: min(250px, 62%); margin: 1.5rem auto 0; margin-top: auto; padding-top: 1.5rem; }
+  .signo {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg);
+    width: clamp(64px, 9vw, 104px); aspect-ratio: 1;
+    display: grid; place-items: center;
+    background: var(--sol); color: var(--ink);
+    border: 6px solid var(--ink); border-radius: 50%;
+    font-family: var(--display); font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1;
+    z-index: 2;
+  }
+
+  /* -- Votación -- */
+  .votar { background: var(--crema); padding: clamp(3rem, 7vw, 5.5rem) 0; padding-bottom: calc(clamp(3rem, 7vw, 5.5rem) + env(safe-area-inset-bottom, 0px)); }
+  .votar .wrap { max-width: 720px; }
+  .votar h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1; }
+  .votar .sub { margin-top: .7rem; font-weight: 600; }
+  form { margin-top: 2rem; display: grid; gap: 1.5rem; }
+  label.campo, legend { font-weight: 800; display: block; margin-bottom: .5rem; }
+  fieldset { border: 0; padding: 0; margin: 0; }
+  input[type=text], textarea {
+    width: 100%;
+    font: 600 1.05rem var(--texto); color: var(--ink);
+    background: var(--blanco);
+    border: 3px solid var(--ink); border-radius: 14px;
+    padding: .8rem 1rem;
+  }
+  textarea { resize: vertical; min-height: 5.5rem; }
+  .opciones { display: grid; gap: .9rem; }
+  .opcion { position: relative; display: block; cursor: pointer; }
+  .opcion input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .opcion .cara {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--blanco);
+    border: 3px solid var(--ink); border-radius: 18px;
+    padding: 1rem 1.15rem;
+    box-shadow: 5px 5px 0 var(--ink);
+    transition: transform .12s, box-shadow .12s, background .12s;
+  }
+  .opcion .marca {
+    flex: none; width: 2rem; height: 2rem;
+    border: 3px solid var(--ink); border-radius: 9px; background: var(--blanco);
+    display: grid; place-items: center;
+    font-weight: 800; color: transparent;
+  }
+  .opcion strong { display: block; font-size: 1.15rem; line-height: 1.2; }
+  .opcion small { display: block; font-size: .95rem; font-weight: 600; opacity: .85; }
+  .opcion input:checked + .cara { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+  .opcion input:checked + .cara .marca { color: var(--ink); }
+  .opcion.dia input:checked + .cara { background: var(--cielo); }
+  .opcion.noche input:checked + .cara { background: var(--noche); color: var(--crema); }
+  .opcion.nada input:checked + .cara { background: #D9D4C7; }
+  .opcion input:focus-visible + .cara { outline: 4px solid #E5383B; outline-offset: 3px; }
+  .votar .boton { box-shadow: 5px 5px 0 var(--calabaza); justify-self: start; margin-top: 0; }
+  .votar .boton:hover { box-shadow: 3px 3px 0 var(--calabaza); }
+  .votar .boton[disabled] { opacity: .6; cursor: wait; }
+  .aviso { font-weight: 800; min-height: 1.5em; }
+  .aviso.error { color: #B3161A; }
+  .hecho {
+    margin-top: 2rem;
+    background: var(--sol);
+    border: 4px solid var(--ink); border-radius: 22px;
+    padding: 1.6rem 1.5rem;
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+  .hecho h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.7rem, 4.5vw, 2.4rem); line-height: 1.05; }
+  .hecho p { margin-top: .5rem; font-weight: 600; }
+  .hecho button { margin-top: 1rem; font: 800 1rem var(--texto); background: none; border: 0; padding: 0; color: var(--ink); text-decoration: underline; cursor: pointer; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 760px) {
+    .portada .wrap { grid-template-columns: 1fr; }
+    .planes { grid-template-columns: 1fr; }
+    .plan-noche { border-left: 0; border-top: 6px solid var(--ink); }
+    .signo { display: none; }
+    .astro { width: 170px; height: 170px; top: -60px; right: -60px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #pista { transition-duration: .01s; }
+    .anima .tachado::after, .anima .cuarenta, .anima .cuarenta span::after, .anima .suma .a, .anima .suma .b, .anima .suma .mas, .anima .confeti i { animation: none; }
+    .bebe .brazo, .bebe .botella, .bebe .cabeza, .bebe .chapa-b, .bebe .nivel, .bebe .ojo-a, .bebe .ojo-c, .bebe .brindis, .cifra.sube, .chapa, .mareado #doll-birra svg { animation: none; }
+    .mas-uno { animation-duration: .01s; }
+    .rubor { transition: none; }
+    .boton, .opcion .cara { transition: none; }
+  }
+
+  /* -- Slides a pantalla completa -- */
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  #visor { position: fixed; inset: 0; overflow: hidden; }
+  #pista { transition: transform 1.25s cubic-bezier(.65, 0, .35, 1); will-change: transform; }
+  #pista.sin-anim { transition: none; }
+  .portada, .planes, .votar, .plan {
+    height: 100vh; height: 100dvh;
+    overflow-x: hidden; overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .portada::-webkit-scrollbar, .planes::-webkit-scrollbar, .votar::-webkit-scrollbar, .plan::-webkit-scrollbar { display: none; }
+  .portada, .votar { display: flex; flex-direction: column; }
+  .portada {
+    padding: clamp(1rem, 4vh, 3rem) 0;
+    padding-top: calc(clamp(1rem, 4vh, 3rem) + env(safe-area-inset-top, 0px));
+  }
+  .portada > .wrap, .votar > .wrap { margin-block: auto; }
+  .barra { width: 100%; max-width: 420px; }
+  .bebedor { width: min(360px, 82vw, 44vh); margin-inline: auto; }
+  .marcador { white-space: nowrap; }
+  .planes { overflow: hidden; }
+  @media (min-width: 761px) {
+    .plan { height: 100%; }
+    .votar .wrap { max-width: 900px; }
+    .opciones { grid-template-columns: repeat(3, 1fr); }
+    .opcion, .opcion .cara { height: 100%; }
+    .opcion .cara { flex-direction: column; align-items: flex-start; gap: .6rem; }
+  }
+  .plan { padding-top: clamp(1.5rem, 5vh, 4rem); }
+  .plan { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .plan h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
+  .plan .cuando { margin-top: .8rem; font-size: 1rem; padding: .25rem .7rem; }
+  .plan ul { margin-top: 1rem; gap: .4rem; }
+  .plan li { font-size: .88rem; padding: .22rem .7rem; border-width: 2.5px; }
+  .plan .nota { margin-top: .9rem; font-size: .98rem; }
+  .plan .falta { margin-top: .3rem; font-size: .88rem; }
+  /* El muñeco ocupa todo el hueco que queda y nunca se corta */
+  .plan .figura {
+    position: relative;
+    flex: 1 1 0; min-height: 120px; width: 100%;
+    margin: .8rem 0 0; padding: 0;
+  }
+  .plan .figura svg {
+    position: absolute; left: 0; bottom: 0;
+    width: 100%; height: 100%; max-height: 520px;
+  }
+  .votar {
+    padding: clamp(1rem, 4vh, 3rem) 0;
+    padding-bottom: calc(clamp(1rem, 4vh, 3rem) + env(safe-area-inset-bottom, 0px));
+  }
+  form { margin-top: clamp(1rem, 3vh, 2rem); gap: clamp(.8rem, 2.2vh, 1.5rem); }
+  textarea { min-height: 4rem; }
+  .aviso { min-height: 0; }
+  .aviso:empty { display: none; }
+
+  .puntos {
+    position: fixed; right: max(10px, env(safe-area-inset-right, 0px)); top: 50%;
+    transform: translateY(-50%);
+    display: grid; gap: 12px; z-index: 5;
+  }
+  .puntos button {
+    width: 14px; height: 14px; padding: 0; border-radius: 50%;
+    background: var(--blanco); border: 3px solid var(--ink);
+    cursor: pointer; transition: transform .2s, background .2s;
+  }
+  .puntos button::before { content: ""; position: absolute; inset: -8px; }
+  .puntos button { position: relative; }
+  .puntos button[aria-current="true"] { background: #E5383B; transform: scale(1.45); }
+
+  @media (max-width: 760px) {
+    .planes { height: auto; overflow: visible; border-block: 0; }
+    .plan { border-top: 6px solid var(--ink); }
+    .bebedor { width: min(74vw, 26vh); }
+    .brindis { font-size: 1.25rem; left: -22%; top: 20%; padding: .2rem .5rem .3rem; border-radius: 11px; }
+    form { gap: .7rem; margin-top: .8rem; }
+    .plan li { font-size: .85rem; }
+    .wrap { width: calc(100% - 3.2rem); }
+    .plan { padding-right: 1.9rem; }
+    .llamada { font-size: .92rem; padding: .45rem .8rem; margin-bottom: 1.1rem; }
+    .entradilla { margin-top: .8rem; font-size: 1rem; }
+    .portada .boton { margin-top: 1rem; padding: .65rem 1.4rem; font-size: 1rem; }
+    .portada .wrap { gap: 1rem; }
+    .cifra { font-size: 2.4rem; }
+    .marcador { margin-top: .6rem; }
+    .pie-foto { min-height: 2.7em; margin-top: .3rem; font-size: .9rem; }
+    .opcion .cara { padding: .7rem .9rem; }
+    .opcion strong { font-size: 1.05rem; }
+    .opcion small { font-size: .88rem; }
+    .opciones { gap: .7rem; }
+    textarea { min-height: 3.2rem; }
+    input[type=text], textarea { padding: .6rem .9rem; }
+    .votar h2 { font-size: 2rem; }
+    .votar .sub { font-size: .95rem; margin-top: .4rem; }
+    label.campo, legend { margin-bottom: .3rem; }
+    .puntos { right: 6px; gap: 10px; }
+    .puntos button { width: 11px; height: 11px; border-width: 2.5px; }
+  }
+  @media (max-width: 760px) and (max-height: 700px) {
+    .entradilla { display: none; }
+    .opcion small { display: none; }
+    .votar .sub { display: none; }
+    .llamada { margin-bottom: .9rem; }
+    .plan .nota { margin-top: .6rem; font-size: .92rem; }
+    .plan ul { margin-top: .7rem; }
+    .plan h2 { font-size: 1.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #pista { transition-duration: .01s; }
+  }
+</style>
+</head>
+<body>
+<div id="visor"><div id="pista">
+
+<header class="portada" data-nombre="Portada">
+  <div class="wrap">
+    <div>
+      <h1>
+        <span class="mentira">Christian no cumple <span class="tachado">40</span>.<br>Cumple</span>
+        <span class="suma" aria-label="20 más 20"><span class="a">20</span><span class="mas">+</span><span class="b">20</span><span class="cuarenta" aria-hidden="true"><span>40</span></span><span class="confeti" id="confeti" aria-hidden="true"></span></span>
+      </h1>
+      <p class="entradilla">Dos veces 20 son dos cumpleaños, así que hay dos fiestas. Mira los planes y dime a cuál vienes.</p>
+      <a class="boton" href="#planes">Ver plan</a>
+    </div>
+    <div class="barra">
+      <p class="llamada">Clica encima y ábrele una cerveza a Christian</p>
+      <button class="bebedor" type="button" id="bebedor" aria-label="Clica encima y ábrele una cerveza a Christian">
+        <span class="posavasos" aria-hidden="true"></span>
+        <span id="doll-birra"></span>
+        <span class="chapas" id="chapas" aria-hidden="true"></span>
+        <span class="brindis" aria-hidden="true">salut!</span>
+      </button>
+      <p class="marcador"><span class="cifra" id="cifra">0</span> <span id="cifra-texto">Estrellas Galicia</span></p>
+      <p class="pie-foto" id="comentario" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="planes" id="planes" aria-label="Los dos planes" data-nombre="Los dos planes">
+    <article class="plan plan-dia" data-nombre="Los primeros 20">
+      <span class="astro" aria-hidden="true"></span>
+      <h2>Los primeros 20</h2>
+      <p class="cuando">Sábado 10 de octubre</p>
+      <ul>
+        <li>🍺 Cervezas</li>
+        <li>🔥 BBQ</li>
+        <li>☀️ Terraceo</li>
+        <li>⚽ Barça</li>
+        <li>🌙 Sortida nocturna</li>
+      </ul>
+      <p class="nota">Se sabe a qué hora empieza. A qué hora acaba, ya no.</p>
+      <p class="falta">Hora y sitio: por confirmar.</p>
+      <div class="figura" id="doll-bbq"></div>
+    </article>
+
+    <article class="plan plan-noche" data-nombre="Los segundos 20">
+      <span class="astro" aria-hidden="true"></span>
+      <h2>Los segundos 20</h2>
+      <p class="cuando">Sábado 31 de octubre, Halloween</p>
+      <ul>
+        <li>🍺 Cervezas</li>
+        <li>🦹 Disfraz de villano de peli</li>
+        <li>🍹 Tardeo</li>
+        <li>🪩 Fiesta</li>
+      </ul>
+      <p class="nota">Ven disfrazado de villano de una película. Sin disfraz no hay chupito.</p>
+      <p class="falta">Hora y sitio: por confirmar.</p>
+      <div class="figura" id="doll-villano"></div>
+    </article>
+
+    <span class="signo" aria-hidden="true">+</span>
+  </section>
+
+  <section class="votar" id="votar" data-nombre="Votar">
+    <div class="wrap">
+      <h2>¿A cuál te apuntas?</h2>
+      <p class="sub">Puedes marcar las dos. Los 40 enteros también cuentan.</p>
+
+      <form id="form" novalidate>
+        <div>
+          <label class="campo" for="nombre">Tu nombre</label>
+          <input type="text" id="nombre" name="nombre" autocomplete="name" maxlength="80" required>
+        </div>
+
+        <fieldset>
+          <legend>Tu voto</legend>
+          <div class="opciones">
+            <label class="opcion dia">
+              <input type="checkbox" id="v1" name="primeros20">
+              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los primeros 20 (10 de octubre)</strong><small>Cervezas, BBQ, Barça y salir</small></span></span>
+            </label>
+            <label class="opcion noche">
+              <input type="checkbox" id="v2" name="segundos20">
+              <span class="cara"><span class="marca">✓</span><span><strong>Voy a los segundos 20 (31 de octubre)</strong><small>Halloween: cervezas, villanos, tardeo y fiesta</small></span></span>
+            </label>
+            <label class="opcion nada">
+              <input type="checkbox" id="v0" name="ninguno">
+              <span class="cara"><span class="marca">✓</span><span><strong>No puedo a ninguno</strong><small>Me pierdo los 40 enteros</small></span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label class="campo" for="mensaje">Mensaje para Christian (opcional)</label>
+          <textarea id="mensaje" name="mensaje" maxlength="400"></textarea>
+        </div>
+
+        <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+        <button class="boton" type="submit" id="enviar">Enviar mi voto</button>
+      </form>
+
+      <div class="hecho" id="hecho" hidden tabindex="-1">
+        <h3 id="hecho-titulo"></h3>
+        <p id="hecho-texto"></p>
+        <button type="button" id="otro">Cambiar mi voto</button>
+      </div>
+    </div>
+  </section>
+</main>
+</div></div>
+<nav class="puntos" id="puntos" aria-label="Secciones"></nav>
+
+<script>
+/* -- El muñeco -- */
+function doll(v) {
+  const INK = '#1B1730', SKIN = '#D99A70', SKIN2 = '#B97A52', HAIR = '#2B211E', TOP = '#2D2A38';
+  const s = `stroke="${INK}" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"`;
+  const limb = (d, w, c) =>
+    `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 9}" stroke-linecap="round" stroke-linejoin="round"/>` +
+    `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  let o = '';
+
+  // Peana de figura
+  o += `<ellipse cx="160" cy="424" rx="86" ry="14" fill="${TOP}" ${s}/><ellipse cx="160" cy="420" rx="70" ry="8" fill="#fff" opacity=".12"/>`;
+
+  // Capa de villano (detrás del cuerpo)
+  if (v === 'villano') {
+    o += `<path d="M120 262 L56 410 L264 410 L200 262 Z" fill="#7B3FC4" ${s}/>
+          <path d="M132 262 L106 410 L214 410 L188 262 Z" fill="#B3161A" ${s}/>`;
+  }
+
+  // Piernas y zapatillas
+  o += limb('M134 390 L133 406', 22, SKIN) + limb('M186 390 L187 406', 22, SKIN);
+  o += `<ellipse cx="128" cy="414" rx="22" ry="11" fill="#FFFDF6" ${s}/><ellipse cx="192" cy="414" rx="22" ry="11" fill="#FFFDF6" ${s}/>`;
+  // Pantalón, pecho y camiseta de tirantes
+  o += `<path d="M112 344 L208 344 L212 392 L166 392 L160 372 L154 392 L108 392 Z" fill="${TOP}" ${s}/>`;
+  o += `<rect x="146" y="240" width="28" height="26" fill="${SKIN2}" ${s}/>`;
+  o += `<path d="M118 264 Q160 254 202 264 L206 350 L114 350 Z" fill="${SKIN}" ${s}/>`;
+  o += `<path d="M134 258 C138 288 182 288 186 258 L204 265 C198 290 206 320 206 352 L114 352 C114 320 122 290 116 265 Z" fill="${TOP}" ${s}/>`;
+
+  if (v === 'bbq') { // Bufanda blaugrana
+    o += `<defs><pattern id="rayas" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="10" height="20" fill="#1F4FB8"/><rect x="10" width="10" height="20" fill="#A8123E"/></pattern></defs>
+          <rect x="124" y="270" width="22" height="54" rx="3" fill="url(#rayas)" ${s}/>
+          <path d="M118 252 Q160 274 202 252 L206 270 Q160 294 114 270 Z" fill="url(#rayas)" ${s}/>`;
+  }
+
+  // Cabezón
+  o += `<g class="cabeza">`;
+  o += `<circle cx="60" cy="182" r="15" fill="${SKIN}" ${s}/><circle cx="260" cy="182" r="15" fill="${SKIN}" ${s}/>`;
+  o += `<circle cx="57" cy="193" r="7" fill="${INK}"/><circle cx="263" cy="193" r="7" fill="${INK}"/>`;
+  o += `<path d="M70 150 C70 80 110 62 160 62 C210 62 250 80 250 150 L250 190 C250 236 215 254 160 254 C105 254 70 236 70 190 Z" fill="${SKIN}" ${s}/>`;
+  // Brillo de vinilo
+  o += `<path d="M84 196 C84 222 96 236 116 242" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".3"/>`;
+  // Degradado de los lados
+  o += `<path d="M71 152 C71 138 72 126 74 112 L86 102 C84 118 84 134 85 147 Q77 150 71 160 Z" fill="${HAIR}" opacity=".4"/>
+        <path d="M249 152 C249 138 248 126 246 112 L234 102 C236 118 236 134 235 147 Q243 150 249 160 Z" fill="${HAIR}" opacity=".4"/>`;
+  // Tupé
+  o += `<path d="M73 118 C52 40 138 0 214 16 C264 26 270 80 247 118 C241 105 233 99 222 96 C190 85 130 85 98 96 C87 99 79 105 73 118 Z" fill="${HAIR}" ${s}/>`;
+  o += `<g fill="none" stroke="#6B5850" stroke-width="3.5" stroke-linecap="round"><path d="M104 88 C116 50 160 30 214 36"/><path d="M134 82 C148 56 186 44 232 54"/><path d="M168 80 C180 66 208 60 240 72"/></g>`;
+  o += `<path d="M96 70 C104 44 126 28 150 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".22"/>`;
+  if (v === 'villano') {
+    o += `<path d="M106 64 Q80 24 108 0 Q110 34 134 48 Z" fill="#E5383B" ${s}/><path d="M214 64 Q240 24 212 0 Q210 34 186 48 Z" fill="#E5383B" ${s}/>`;
+  }
+
+  // Cara: cejas, ojos de botón y nariz mínima (sin boca, como las figuras)
+  if (v === 'villano') {
+    o += `<g stroke="${HAIR}" stroke-width="10" stroke-linecap="round"><path d="M94 140 L140 156"/><path d="M226 140 L180 156"/></g>`;
+  } else {
+    o += `<g fill="none" stroke="${HAIR}" stroke-width="10" stroke-linecap="round"><path d="M96 150 Q118 138 140 150"/><path d="M180 144 Q202 130 224 142"/></g>`;
+  }
+  if (v === 'bbq') {
+    o += `<path d="M140 180 L180 180" stroke="${INK}" stroke-width="6"/><rect x="90" y="164" width="56" height="38" rx="14" fill="${INK}"/><rect x="174" y="164" width="56" height="38" rx="14" fill="${INK}"/>
+          <path d="M102 176 L118 176 M186 176 L202 176" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/>`;
+  } else {
+    o += `<g class="ojo-a"><circle cx="118" cy="184" r="19" fill="${INK}"/><circle cx="202" cy="184" r="19" fill="${INK}"/>
+          <circle cx="111" cy="177" r="5.5" fill="#fff"/><circle cx="195" cy="177" r="5.5" fill="#fff"/></g>`;
+    if (v === 'birra') o += `<g class="ojo-c" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"><path d="M100 190 Q118 172 136 190"/><path d="M184 190 Q202 172 220 190"/></g>`;
+  }
+  o += `<path d="M153 212 Q160 220 167 212" fill="none" stroke="${SKIN2}" stroke-width="4.5" stroke-linecap="round"/>`;
+
+  o += `<g class="rubor" fill="#E5383B"><ellipse cx="92" cy="216" rx="15" ry="9" opacity=".55"/><ellipse cx="228" cy="216" rx="15" ry="9" opacity=".55"/></g>`;
+  o += `</g>`;
+
+  // Brazo izquierdo
+  if (v === 'birra') {
+    o += limb('M106 278 L78 314 L110 340', 28, SKIN);
+    o += `<circle cx="113" cy="340" r="13" fill="${SKIN}" ${s}/>`;
+  } else {
+    if (v === 'bbq') {
+      o += limb('M26 262 L6 204', 5, '#C9CCD6') + limb('M36 262 L30 200', 5, '#C9CCD6');
+    } else {
+      o += limb('M30 408 L30 132', 7, '#FF8A1F') + limb('M12 104 L12 130 Q30 148 48 130 L48 104', 7, '#FF8A1F') + limb('M30 94 L30 134', 7, '#FF8A1F');
+    }
+    o += limb('M106 278 L62 298 L34 272', 28, SKIN);
+    o += `<circle cx="32" cy="267" r="14" fill="${SKIN}" ${s}/>`;
+    if (v === 'bbq') o += limb('M-6 198 Q16 182 36 194', 15, '#C4573A');
+  }
+
+  // Brazo derecho y lo que lleva en la mano
+  if (v === 'birra') {
+    // Brazo con la Estrella Galicia: gira desde el hombro al beber
+    const B = 'M268 300 L268 240 C268 226 277 220 277 206 L277 182 Q277 177 280 177 L288 177 Q291 177 291 182 L291 206 C291 220 300 226 300 240 L300 300 Q300 306 294 306 L274 306 Q268 306 268 300 Z';
+    o += `<g class="brazo">` + limb('M214 278 L256 296 L284 252', 28, SKIN);
+    o += `<g class="botella">
+            <defs><clipPath id="vidrio"><path d="${B}"/></clipPath></defs>
+            <path d="${B}" fill="#6B3410"/>
+            <g clip-path="url(#vidrio)">
+              <rect class="nivel" x="262" y="176" width="44" height="132" fill="#C7701C"/>
+              <rect x="262" y="186" width="44" height="22" fill="#17151F"/><rect x="262" y="208" width="44" height="5" fill="#E5383B"/>
+              <rect x="262" y="262" width="44" height="26" fill="#17151F"/><rect x="262" y="288" width="44" height="9" fill="#E5383B"/>
+              <circle cx="284" cy="274" r="8" fill="#E5383B"/>
+              <path d="M284 268 l1.8 3.9 4.2 .5 -3.1 2.9 .8 4.2 -3.7 -2.1 -3.7 2.1 .8 -4.2 -3.1 -2.9 4.2 -.5 Z" fill="#fff"/>
+              <path d="M273 232 L273 256" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".4"/>
+            </g>
+            <path d="${B}" fill="none" ${s}/>
+            <rect class="chapa-b" x="275" y="166" width="18" height="12" rx="3" fill="#2D2A38" ${s}/>
+          </g>`;
+    o += `<ellipse cx="284" cy="250" rx="17" ry="12" fill="${SKIN}" ${s}/></g>`;
+  } else {
+    o += limb('M214 278 L238 324 L206 310', 28, SKIN);
+  }
+  if (v === 'birra') {
+  } else if (v === 'bbq') {
+    o += `<path d="M216 282 q20 0 20 17 q0 17 -20 17" fill="none" stroke="${INK}" stroke-width="12" stroke-linecap="round"/><path d="M216 282 q20 0 20 17 q0 17 -20 17" fill="none" stroke="#FFFDF6" stroke-width="4" stroke-linecap="round"/>
+          <rect x="170" y="272" width="46" height="58" rx="6" fill="#F6B21B" ${s}/>
+          <path d="M182 290 L182 320 M193 290 L193 320 M204 290 L204 320" stroke="#D98E0A" stroke-width="4" stroke-linecap="round"/>
+          <path d="M166 280 q-5 -14 9 -16 q4 -12 17 -7 q10 -9 19 2 q12 0 9 14 q2 10 -9 9 q-5 7 -12 0 q-9 7 -15 0 q-12 5 -18 -2 Z" fill="#FFFDF6" ${s}/>`;
+    o += `<ellipse cx="202" cy="324" rx="16" ry="12" fill="${SKIN}" ${s}/>`;
+  } else {
+    o += `<path d="M192 274 L195 266" stroke="#3E7B3A" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="192" cy="302" r="27" fill="#FF8A1F" ${s}/>
+          <path d="M178 296 l7 -10 l7 10 Z M196 296 l7 -10 l7 10 Z" fill="${INK}"/>
+          <path d="M175 308 l7 5 l5 -5 l5 5 l5 -5 l5 5 l7 -5 q-17 19 -34 0 Z" fill="${INK}"/>`;
+    o += `<ellipse cx="208" cy="328" rx="16" ry="12" fill="${SKIN}" ${s}/>`;
+  }
+
+  const alt = { birra: 'Figura cabezona de Christian con una Estrella Galicia en la mano', bbq: 'Figura cabezona de Christian con gafas de sol, cerveza, pinzas de barbacoa y bufanda', villano: 'Figura cabezona de Christian disfrazada de villano con capa, cuernos y calabaza' }[v];
+  const box = '-30 -8 380 452';
+  return `<svg viewBox="${box}" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${alt}">${o}</svg>`;
+}
+document.getElementById('doll-birra').innerHTML = doll('birra');
+document.getElementById('doll-bbq').innerHTML = doll('bbq');
+document.getElementById('doll-villano').innerHTML = doll('villano');
+
+/* -- Slides: una pantalla cada vez, con transición lenta -- */
+(function () {
+  const pista = document.getElementById('pista');
+  const puntos = document.getElementById('puntos');
+  const movil = window.matchMedia('(max-width: 760px)');
+  const DURACION = 1250;
+  let slides = [], actual = 0, bloqueado = false, ultimaRueda = 0;
+
+  function montar(mantener) {
+    const el = mantener ? slides[actual] : null;
+    document.querySelectorAll('[data-nombre]').forEach(s => { s.inert = false; });
+    slides = movil.matches
+      ? [...document.querySelectorAll('.portada, .plan, .votar')]
+      : [...document.querySelectorAll('.portada, .planes, .votar')];
+    puntos.innerHTML = '';
+    slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Ir a: ' + s.dataset.nombre);
+      b.addEventListener('click', () => ir(i));
+      puntos.appendChild(b);
+    });
+    let i = el ? slides.findIndex(s => s === el || s.contains(el) || el.contains(s)) : 0;
+    colocar(Math.max(i, 0), false);
+  }
+
+  function colocar(i, animar) {
+    actual = Math.max(0, Math.min(slides.length - 1, i));
+    pista.classList.toggle('sin-anim', !animar);
+    const y = slides[actual].getBoundingClientRect().top - pista.getBoundingClientRect().top;
+    pista.style.transform = 'translateY(' + (-y) + 'px)';
+    slides.forEach((s, k) => { s.inert = k !== actual; });
+    [...puntos.children].forEach((b, k) => b.setAttribute('aria-current', k === actual ? 'true' : 'false'));
+    document.getElementById('visor').scrollTop = 0;
+  }
+
+  function ir(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    if (bloqueado || i === actual) return;
+    bloqueado = true;
+    colocar(i, true);
+    if (i === 0) animarPortada();
+    setTimeout(() => { bloqueado = false; }, DURACION + 150);
+  }
+  const mover = d => ir(actual + d);
+
+  // ¿El slide tiene scroll interno y aún no ha llegado al borde?
+  function quedaScroll(dir) {
+    const s = slides[actual];
+    if (s.scrollHeight - s.clientHeight < 4) return false;
+    return dir > 0 ? s.scrollTop + s.clientHeight < s.scrollHeight - 2 : s.scrollTop > 2;
+  }
+
+  window.addEventListener('wheel', e => {
+    const ahora = Date.now(), pausa = ahora - ultimaRueda;
+    ultimaRueda = ahora;
+    if (bloqueado) { e.preventDefault(); return; }
+    const dir = Math.sign(e.deltaY);
+    if (!dir || quedaScroll(dir)) return;
+    e.preventDefault();
+    // Ignora la inercia del trackpad tras un cambio de slide
+    if (pausa < 120 && Math.abs(e.deltaY) < 30) return;
+    mover(dir);
+  }, { passive: false });
+
+  let y0 = null, enBorde = { arriba: true, abajo: true };
+  window.addEventListener('touchstart', e => {
+    y0 = e.touches[0].clientY;
+    enBorde = { abajo: !quedaScroll(1), arriba: !quedaScroll(-1) };
+  }, { passive: true });
+  window.addEventListener('touchend', e => {
+    if (y0 === null) return;
+    const dy = y0 - e.changedTouches[0].clientY;
+    y0 = null;
+    if (Math.abs(dy) < 45) return;
+    if (dy > 0 && enBorde.abajo) mover(1);
+    if (dy < 0 && enBorde.arriba) mover(-1);
+  }, { passive: true });
+
+  window.addEventListener('keydown', e => {
+    const t = e.target, escribe = t.matches('input, textarea');
+    if (escribe) return;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); mover(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); mover(-1); }
+    else if (e.key === ' ' && !t.matches('button, a, label')) { e.preventDefault(); mover(e.shiftKey ? -1 : 1); }
+    else if (e.key === 'Home') { e.preventDefault(); ir(0); }
+    else if (e.key === 'End') { e.preventDefault(); ir(slides.length - 1); }
+  });
+
+  document.querySelector('a[href="#planes"]').addEventListener('click', e => {
+    e.preventDefault(); ir(1);
+  });
+
+  // Confeti y animación del 40 → 20 + 20 (se repite al volver a la portada)
+  const portada = document.querySelector('.portada'), confeti = document.getElementById('confeti');
+  const colores = ['#1F5FD6', '#7B3FC4', '#E5383B', '#FFFDF6', '#FF8A1F'];
+  for (let k = 0; k < 16; k++) {
+    const c = document.createElement('i'), ang = (k / 16) * Math.PI * 2 + Math.random() * .4, d = 1.6 + Math.random() * 1.6;
+    c.style.background = colores[k % colores.length];
+    c.style.setProperty('--x', (Math.cos(ang) * d).toFixed(2) + 'em');
+    c.style.setProperty('--y', (Math.sin(ang) * d * .6 - .2).toFixed(2) + 'em');
+    c.style.setProperty('--r', Math.round(Math.random() * 720 - 360) + 'deg');
+    confeti.appendChild(c);
+  }
+  function animarPortada() {
+    portada.classList.remove('anima'); void portada.offsetWidth; portada.classList.add('anima');
+  }
+  animarPortada();
+
+  window.addEventListener('resize', () => colocar(actual, false));
+  movil.addEventListener('change', () => montar(true));
+  montar(false);
+})();
+
+/* -- Contador de Estrellas Galicia -- */
+const bebedor = document.getElementById('bebedor');
+const cifra = document.getElementById('cifra');
+const comentario = document.getElementById('comentario');
+const frases = {
+  1: 'Primera Estrella. Empieza el cumple.',
+  5: 'Cinco. Todavía camina recto.',
+  10: 'Diez. Ya está cantando el himno del Barça.',
+  20: '20. Primeros 20 completados.',
+  30: '30. Dice que él controla.',
+  40: '40 enteros. Que alguien le pida un taxi.',
+  60: '60. Esto ya son 20 + 20 + 20.'
+};
+let birras = 0;
+const chapas = document.getElementById('chapas');
+const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+bebedor.addEventListener('click', () => {
+  birras++;
+  cifra.textContent = birras;
+  document.getElementById('cifra-texto').textContent = birras === 1 ? 'Estrella Galicia' : 'Estrellas Galicia';
+  if (frases[birras]) comentario.textContent = frases[birras];
+  bebedor.style.setProperty('--rubor', Math.min(birras / 20, 1));
+
+  // Cuanto más bebe, más se tambalea
+  bebedor.style.setProperty('--mareo', Math.min(birras, 40) * 0.12 + 'deg');
+  bebedor.classList.toggle('mareado', birras >= 5);
+
+  // Reinicia la animación del trago
+  bebedor.classList.remove('bebe'); cifra.classList.remove('sube');
+  void bebedor.offsetWidth;
+  bebedor.classList.add('bebe'); cifra.classList.add('sube');
+
+  // La chapa cae al suelo y se queda ahí
+  if (chapas.children.length < 45) {
+    const c = document.createElement('span');
+    c.className = 'chapa';
+    c.style.left = (8 + Math.random() * 80) + '%';
+    c.style.bottom = (Math.random() * 6) + '%';
+    c.style.setProperty('--dx', (Math.random() * 80 - 10) + 'px');
+    chapas.appendChild(c);
+  }
+  // +1 flotando
+  if (!quieto.matches) {
+    const m = document.createElement('span');
+    m.className = 'mas-uno'; m.textContent = '+1';
+    m.setAttribute('aria-hidden', 'true');
+    bebedor.appendChild(m);
+    m.addEventListener('animationend', () => m.remove());
+  }
+});
+
+/* -- Votación -- */
+const form = document.getElementById('form');
+const v1 = document.getElementById('v1'), v2 = document.getElementById('v2'), v0 = document.getElementById('v0');
+const aviso = document.getElementById('aviso'), enviar = document.getElementById('enviar');
+const hecho = document.getElementById('hecho');
+
+// "No puedo a ninguno" y las fechas se excluyen entre sí
+v0.addEventListener('change', () => { if (v0.checked) { v1.checked = false; v2.checked = false; } });
+[v1, v2].forEach(c => c.addEventListener('change', () => { if (c.checked) v0.checked = false; }));
+
+function error(msg, campo) {
+  aviso.textContent = msg; aviso.className = 'aviso error';
+  if (campo) campo.focus();
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById('nombre').value.trim();
+  if (!nombre) return error('Escribe tu nombre para saber quién vota.', document.getElementById('nombre'));
+  if (!v1.checked && !v2.checked && !v0.checked) return error('Marca al menos una opción.', v1);
+  if (!SHEET_URL) return error('Falta conectar la hoja de Google: pega la URL de Apps Script en SHEET_URL.');
+
+  const datos = {
+    nombre,
+    primeros20: v1.checked, segundos20: v2.checked, ninguno: v0.checked,
+    mensaje: document.getElementById('mensaje').value.trim()
+  };
+  enviar.disabled = true; enviar.textContent = 'Enviando voto…';
+  aviso.textContent = ''; aviso.className = 'aviso';
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(datos)
+    });
+    const [t, p] =
+      datos.primeros20 && datos.segundos20 ? ['Apuntado a los 40 enteros', 'Nos vemos el 10 y el 31 de octubre. Ve pensando tu villano.'] :
+      datos.primeros20 ? ['Apuntado a los primeros 20', 'Nos vemos el sábado 10 de octubre.'] :
+      datos.segundos20 ? ['Apuntado a los segundos 20', 'Nos vemos el sábado 31 de octubre. Ve pensando tu villano.'] :
+      ['Voto enviado', 'Te pierdes los 40 enteros, pero se te quiere igual.'];
+    document.getElementById('hecho-titulo').textContent = t;
+    document.getElementById('hecho-texto').textContent = p;
+    form.hidden = true; hecho.hidden = false; hecho.focus();
+  } catch (err) {
+    error('No se ha podido enviar el voto. Revisa la conexión y vuelve a intentarlo.');
+  } finally {
+    enviar.disabled = false; enviar.textContent = 'Enviar mi voto';
+  }
+});
+document.getElementById('otro').addEventListener('click', () => {
+  hecho.hidden = true; form.hidden = false; document.getElementById('nombre').focus();
+});
+</script>
+</body>
+</html>
