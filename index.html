@@ -604,7 +604,8 @@
   @media (max-width: 760px) {
     .planes { height: auto; overflow: visible; border-block: 0; }
     .plan { border-top: 6px solid var(--ink); }
-    .bebedor { width: min(74vw, 26vh); }
+    .bebedor { width: min(78vw, 31vh); }
+    .votar .boton { justify-self: center; }
     .brindis { font-size: 1.25rem; left: -22%; top: 20%; padding: .2rem .5rem .3rem; border-radius: 11px; }
     form { gap: .7rem; margin-top: .8rem; }
     .plan li { font-size: .85rem; }
@@ -612,7 +613,9 @@
     .plan { padding-right: 1.9rem; }
     .llamada { font-size: .92rem; padding: .45rem .8rem; margin-bottom: 1.1rem; }
     .entradilla { margin-top: .8rem; font-size: 1rem; }
-    .portada .boton { margin-top: 1rem; padding: .65rem 1.4rem; font-size: 1rem; }
+    /* Móvil: texto centrado y más sitio para el muñeco */
+    .portada .wrap > div:first-child { text-align: center; }
+    .entradilla { margin-inline: auto; }
     .portada .wrap { gap: 1rem; }
     .cifra { font-size: 2.4rem; }
     .marcador { margin-top: .6rem; }
@@ -657,7 +660,6 @@
         <span class="suma" aria-label="20 más 20"><span class="a">20</span><span class="mas">+</span><span class="b">20</span><span class="cuarenta" aria-hidden="true"><span>40</span></span><span class="confeti" id="confeti" aria-hidden="true"></span></span>
       </h1>
       <p class="entradilla">Dos veces 20 son dos cumpleaños, así que hay dos fiestas. Mira los planes y dime a cuál vienes.</p>
-      <a class="boton" href="#planes">Ver plan</a>
     </div>
     <div class="barra">
       <p class="llamada">Clica encima y ábreme una cerveza</p>
@@ -993,9 +995,6 @@ document.getElementById('doll-villano').innerHTML = doll('villano');
     else if (e.key === 'End') { e.preventDefault(); ir(slides.length - 1); }
   });
 
-  document.querySelector('a[href="#planes"]').addEventListener('click', e => {
-    e.preventDefault(); ir(1);
-  });
 
   // Confeti y animación del 40 → 20 + 20 (se repite al volver a la portada)
   const portada = document.querySelector('.portada'), confeti = document.getElementById('confeti');
